@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -13,7 +14,7 @@ import (
 )
 
 type Todo struct {
-	ID        bson.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	ID        bson.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Completed bool          `json:"completed"`
 	Body      string        `json:"body"`
 }
@@ -54,6 +55,11 @@ func main() {
 	collection = client.Database("gotodo_db").Collection("todos")
 
 	app := fiber.New()
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:5173",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
 
 	app.Get("/api/todos", getTodos)
 	app.Post("/api/todos", createTodo)
