@@ -7,7 +7,7 @@ import { BASE_URL } from "@/App";
 
 export default function TodoItem({ todo }: { todo: Todo }) {
   const queryClient = useQueryClient();
-  
+
   const { mutate: updateTodo, isPending: isUpdating } = useMutation({
     mutationKey: ["updateTodo"],
     mutationFn: async () => {
@@ -27,7 +27,7 @@ export default function TodoItem({ todo }: { todo: Todo }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
-    }
+    },
   });
 
   const { mutate: deleteTodo, isPending: isDeleting } = useMutation({
@@ -48,7 +48,7 @@ export default function TodoItem({ todo }: { todo: Todo }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
-    }
+    },
   });
 
   return (
@@ -67,7 +67,10 @@ export default function TodoItem({ todo }: { todo: Todo }) {
         borderRadius={"lg"}
       >
         <Text
-          color={todo.completed ? "green.600" : "black"}
+          color={useColorModeValue(
+            todo.completed ? "green.600" : "black",
+            todo.completed ? "green.600" : "white"
+          )}
           textDecoration={todo.completed ? "line-through" : "none"}
         >
           {todo.body}
