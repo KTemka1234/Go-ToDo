@@ -7,7 +7,7 @@ services:
         - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER:-root}
         - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-password}
       volumes:
-        - ./mongo_data:/data/mongodb
+        - ./mongo_data:/data/db
       ports:
         - 27017:27017
       restart: unless-stopped
@@ -23,4 +23,28 @@ services:
       - ME_CONFIG_MONGODB_SERVER=mongodb
     ports:
       - 8081:8081
+    restart: unless-stopped
+
+  backend:
+    build: .
+    container_name: backend
+    environment:
+      - BACKEND_PORT=${BACKEND_PORT:-3000}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - MONGODB_URI=${MONGODB_URI:-mongodb://root:password@mongodb:27017}
+    ports:
+      - ${BACKEND_PORT:-3000}:${BACKEND_PORT:-3000}
+    restart: unless-stopped
+
+  frontend:
+    build: ./client
+    container_name: frontend
+    environment:
+      - VITE_PORT=${VITE_PORT:-5173}
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3000/api}
+    volumes:
+        - ./client:/app
+        - /app/node_modules
+    ports:
+      - ${PORT:-5173}:${PORT:-5173}
     restart: unless-stopped

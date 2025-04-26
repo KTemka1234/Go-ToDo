@@ -26,7 +26,7 @@ func main() {
 	log.SetPrefix("[Go-ToDo] ")
 
 	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+		log.Printf("Error loading .env file: %v", err)
 	}
 
 	MONGODB_URI := os.Getenv("MONGODB_URI")
@@ -56,8 +56,12 @@ func main() {
 
 	app := fiber.New()
 
+	FRONTEND_URL := os.Getenv("FRONTEND_URL")
+	if FRONTEND_URL == "" {
+		log.Fatal("FRONTEND_URL is not set")
+	}
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:5173",
+		AllowOrigins: FRONTEND_URL,
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
@@ -66,7 +70,7 @@ func main() {
 	app.Patch("/api/todos/:id", updateTodo)
 	app.Delete("/api/todos/:id", deleteTodo)
 
-	PORT := os.Getenv("PORT")
+	PORT := os.Getenv("BACKEND_PORT")
 	if PORT == "" {
 		PORT = "3000"
 	}
